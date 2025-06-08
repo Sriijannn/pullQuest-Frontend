@@ -56,7 +56,13 @@ const LoginPage = () => {
     } finally {
       setIsLoading(false);
     }
+  };  
+
+  const githubLogin = () => {
+    // this URL should match your backend route
+    window.location.href = "http://localhost:8012/auth/github";
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -166,6 +172,25 @@ const LoginPage = () => {
               </button>
             </p>
           </div>
+
+          <div className="mt-4 text-center">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={githubLogin}
+              disabled={isLoading}
+            >
+              <svg
+                className="inline h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                {/* Paste the full GitHub icon path here */}
+                <path d="M12 .297c-6.6..." />
+              </svg>
+              Sign in with GitHub
+            </Button>
+          </div>  
         </CardContent>
       </Card>
     </div>
