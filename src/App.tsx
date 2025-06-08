@@ -7,13 +7,18 @@ import {
 import LoginPage from "./auth/LoginPage";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoutes";
+import Website from "./pages/Website"
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<Website/>} />
 
+        {/* Your login page now lives at /login */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected dashboards */}
         <Route
           path="/contributor/dashboard"
           element={
@@ -22,7 +27,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/maintainer/dashboard"
           element={
@@ -31,7 +35,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/company/dashboard"
           element={
@@ -41,8 +44,8 @@ const App = () => {
           }
         />
 
-        {/* fallback route */}
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* Anything else → back to login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );
