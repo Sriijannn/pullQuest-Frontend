@@ -1,200 +1,178 @@
-"use client";
+// src/auth/LoginPage.tsx
+"use client"
 
-import type React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { Eye, EyeOff, Loader2, User } from "lucide-react";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, Loader2, Github, ArrowRight, Coins } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useLogin } from "../hooks/UseLogin"
+import { toast } from "sonner"
+import { useUser } from "@/context/UserProvider"
 
-import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { Alert, AlertDescription } from "../components/ui/alert";
-
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("contributor");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+export default function LoginPage() {
+  const [role, setRole] = useState<"contributor"|"maintainer"|"company"| "">("")
+  const [githubUsername, setGithubUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const { setUser } = useUser()
+  const navigate = useNavigate()
+  const { login, isLoading, error } = useLogin()
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    e.preventDefault()
 
-    try {
-      const response = await axios.post("http://localhost:8012/api/login", {
-        email,
-        password,
-        role,
-      });
+    // Call the hook
+    const result = await login({
+      role,
+      email,
+      password: role === "company" ? password : undefined,
+      githubUsername: (role === "contributor" || role === "maintainer") ? githubUsername : undefined,
+    })
 
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      const decoded: any = jwtDecode(token);
-      navigate(`/${decoded.role}/dashboard`);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid login credentials");
-    } finally {
-      setIsLoading(false);
+    if (result.success) {
+      // hook already did navigate for you; nothing more to do
+    } else {
+      // error is already set inside the hook; you can also show extra feedback here
     }
-  };  
-
-  const githubLogin = () => {
-    // this URL should match your backend route
-    window.location.href = "http://localhost:8012/auth/github";
-  };
-
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <User className="h-6 w-6 text-blue-600" />
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            <span className="text-xl font-semibold text-gray-900">Pull Quest</span>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+        </div>
+      </nav>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] py-12 px-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <Coins className="mx-auto mb-6 h-16 w-16 rounded-full bg-gray-900 p-4 text-white" />
+            <h1 className="text-4xl font-bold mb-4">Welcome back</h1>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="pr-10"
-                />
+          <Card className="border shadow-lg">
+            <CardContent className="p-8">
+              <form onSubmit={handleLogin} className="space-y-6">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Role */}
+                <Label>Who are you?</Label>
+                <Select value={role} onValueChange={(value: string) => setRole(value as "contributor" | "maintainer" | "company" | "")} disabled={isLoading} required>
+                  <SelectTrigger className="h-12"><SelectValue placeholder="Select role" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="contributor">Contributor</SelectItem>
+                    <SelectItem value="maintainer">Maintainer</SelectItem>
+                    <SelectItem value="company">Company</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* GitHub Username */}
+                {(role === "contributor" || role === "maintainer") && (
+                  <div>
+                    <Label>GitHub Username</Label>
+                    <Input
+                      type="text"
+                      placeholder="octocat"
+                      value={githubUsername}
+                      onChange={(e) => setGithubUsername(e.target.value)}
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
+                )}
+
+                {/* Email */}
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    required
+                  />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <Label>Password</Label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                      required
+                      className="pr-12"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword((v) => !v)}
+                      disabled={isLoading}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-gray-900 text-white"
+                  disabled={
+                    isLoading ||
+                    !role ||
+                    !email ||
+                    (role !== "company" && !githubUsername) ||
+                    (role === "company" && !password)
+                  }
+                >
+                  {isLoading ? <Loader2 className="animate-spin" /> : "Sign in"}
+                  {!isLoading && <ArrowRight className="ml-2 h-4 w-4 inline-block" />}
+                </Button>
+
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
+                  variant="outline"
+                  className="w-full h-12"
+                  onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/callback/github`}
                   disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-500" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-gray-500" />
-                  )}
-                  <span className="sr-only">
-                    {showPassword ? "Hide password" : "Show password"}
-                  </span>
+                  <Github className="mr-2" /> Sign in with GitHub
                 </Button>
-              </div>
-            </div>
+              </form>
 
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select value={role} onValueChange={setRole} disabled={isLoading}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="contributor">Contributor</SelectItem>
-                  <SelectItem value="maintainer">Maintainer</SelectItem>
-                  <SelectItem value="company">Company</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading || !email || !password}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>
-              Don't have an account?{" "}
-              <button
-                type="button"
-                className="font-medium text-blue-600 hover:text-blue-500 underline-offset-4 hover:underline"
-                onClick={() => navigate("/signup")}
-              >
-                Sign up
-              </button>
-            </p>
-          </div>
-
-          <div className="mt-4 text-center">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={githubLogin}
-              disabled={isLoading}
-            >
-              <svg
-                className="inline h-5 w-5 mr-2"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                {/* Paste the full GitHub icon path here */}
-                <path d="M12 .297c-6.6..." />
-              </svg>
-              Sign in with GitHub
-            </Button>
-          </div>  
-        </CardContent>
-      </Card>
+              <p className="mt-4 text-center text-sm">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  className="font-medium text-gray-900 underline"
+                  onClick={() => navigate("/signUp")}
+                >
+                  Sign up for free
+                </button>
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
-  );
-};
-
-export default LoginPage;
+  )
+}

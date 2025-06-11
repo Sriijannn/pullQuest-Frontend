@@ -7,18 +7,20 @@ import {
 import LoginPage from "./auth/LoginPage";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoutes";
-import Website from "./pages/Website"
-
+import Website from "./pages/Website";
+import SignUp from "./auth/SignUp";
+import { Toaster } from "./components/ui/sonner"; // ✅ Your custom Toaster wrapper
+import MaintainerDashboard from "./pages/MaintainerDashboard";
 const App = () => {
   return (
     <Router>
+      <div className="App">
+
       <Routes>
-        <Route path="/" element={<Website/>} />
-
-        {/* Your login page now lives at /login */}
+        <Route path="/" element={<Website />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signUp" element={<SignUp />} />
 
-        {/* Protected dashboards */}
         <Route
           path="/contributor/dashboard"
           element={
@@ -26,15 +28,15 @@ const App = () => {
               <Dashboard role="Contributor" />
             </PrivateRoute>
           }
-        />
+          />
         <Route
           path="/maintainer/dashboard"
           element={
             <PrivateRoute allowedRoles={["maintainer"]}>
-              <Dashboard role="Maintainer" />
+              <MaintainerDashboard/>
             </PrivateRoute>
           }
-        />
+          />
         <Route
           path="/company/dashboard"
           element={
@@ -42,11 +44,13 @@ const App = () => {
               <Dashboard role="Company" />
             </PrivateRoute>
           }
-        />
-
-        {/* Anything else → back to login */}
+          />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+
+      {/* ✅ Mount Toaster ONCE here */}
+      <Toaster />
+    </div>
     </Router>
   );
 };

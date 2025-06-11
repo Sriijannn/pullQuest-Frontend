@@ -3,8 +3,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowRight,
   Github,
@@ -30,7 +31,7 @@ import {
 
 export default function PullQuestLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-
+  const navigate = useNavigate();
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
   }
@@ -66,13 +67,6 @@ export default function PullQuestLanding() {
               <a href="#" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
                 Pricing
               </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-                Sign in
-              </a>
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-md">
-                Get started
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
             </div>
           </div>
         </div>
@@ -99,12 +93,13 @@ export default function PullQuestLanding() {
               </p>
 
               <div className="space-y-4">
-                <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md flex items-center justify-center">
+                <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md flex items-center justify-center"  onClick={() => navigate("/login")}>
                   <Github className="w-5 h-5 mr-2" />
                   Sign up with GitHub
                 </Button>
 
                 <Button
+                  onClick={() => navigate("/login")}
                   variant="outline"
                   className="w-full border-gray-300 text-gray-700 py-3 rounded-md flex items-center justify-center"
                 >
