@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/UseLogin";
 import { useUser } from "@/context/UserProvider";
 import { useEffect } from "react";
-
+import { toast } from "sonner";
 type LoginCase = "initial" | "github_oauth" | "success";
 
 export default function LoginPage() {
@@ -38,7 +38,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     const result = await login({
-      role: role || undefined,
+      role: role || '',
       email,
       password,
       githubUsername: (role === "contributor" || role === "maintainer") ? githubUsername : undefined,
@@ -51,26 +51,41 @@ export default function LoginPage() {
     }
     // Error handling is done by the hook
   };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const userParam = params.get("user");
-    if (userParam) {
-      try {
-        // It may be URI-encoded—decode first
-        const decoded = decodeURIComponent(userParam);
-        const user = JSON.parse(decoded);
-        console.log("User found from OAuth:", user); // ← add this!
-        setUser(user);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        if (user.role) {
-          navigate(`/${user.role}/dashboard`);
-        }
-      } catch (e) {
-        console.error("Failed to parse user from OAuth:", e);
-      }
+    if (!userParam) {
+      // No user data → back to login
+      navigate("/login", { replace: true });
+      return;
     }
-  }, [setUser, navigate]);
-  
+
+    try {
+      const decoded = decodeURIComponent(userParam);
+      const oauthUser = JSON.parse(decoded);
+      console.log("OAuth user received:", oauthUser);
+
+      // 1) Store in context
+      setUser(oauthUser);
+      toast.success("Login successful! Redirecting…");
+
+      // 2) Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // 3) Route to the right dashboard
+      if (oauthUser.role) {
+        navigate(`/${oauthUser.role}/dashboard`, { replace: true });
+      } else {
+        // fallback if role missing
+        navigate("/contributor/dashboard", { replace: true });
+      }
+    } catch (e) {
+      console.error("Failed to parse OAuth user:", e);
+      toast.error("Login error. Please try again.");
+      navigate("/login", { replace: true });
+    }
+  }, [navigate, setUser]);
 
   // Render Case 1: Initial Login
   const renderInitialLogin = () => (
@@ -292,5 +307,5 @@ export default function LoginPage() {
       </div>
     </div>
   );
-  );
+
 }

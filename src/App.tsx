@@ -9,15 +9,16 @@ import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoutes";
 import Website from "./pages/Website";
 import SignUp from "./auth/SignUp";
-import { Toaster } from "./components/ui/sonner"; // ✅ Your custom Toaster wrapper
+import { Toaster } from "./components/ui/sonner";
 import OpenIssuePage from "./components/OpenIssuePage";
 import MaintainerDashboard from "./pages/MaintainerDashboard";
+import ReviewPrStep from "./Flows/RepoIssuesStep";
+
 const App = () => {
   return (
     <Router>
       <div className="App">
-
-      <Routes>
+       <Routes>
         <Route path="/" element={<Website />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signUp" element={<SignUp />} />
@@ -30,6 +31,7 @@ const App = () => {
             </PrivateRoute>
           }
           />
+
         <Route
           path="/maintainer/dashboard"
           element={
@@ -38,11 +40,15 @@ const App = () => {
             </PrivateRoute>
           }
           />
-            <Route
+            
+        <Route
           path="/maintainer/open-issue/:number"
           element={<OpenIssuePage />}
         />
-
+      <Route
+        path="/maintainer/repo/:owner/:repo/prs"
+        element={<ReviewPrStep />}
+      />
         <Route
           path="/company/dashboard"
           element={
@@ -51,6 +57,8 @@ const App = () => {
             </PrivateRoute>
           }
           />
+        
+        {/* Catch-all route should be LAST */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
 

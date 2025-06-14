@@ -4,16 +4,14 @@ import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Settings } from "lucide-react"
-import OrgStep from "./OrgStep"
 import RepoStep from "./RepoStep"
-import ReviewPrStep from "./ReviewPrStep"
+import ReviewPrStep from "./RepoIssuesStep"
 import AnalyticsStep from "./AnalyticsStep"
 
-const TOTAL_STEPS = 4
+const TOTAL_STEPS = 3
 const STEP_NAMES = [
-  "Select Organization",
   "Manage Repositories",
-  "Review Pull Requests",
+  "Review Pull Requests", 
   "Analytics Dashboard",
 ]
 
@@ -31,15 +29,12 @@ export default function MaintainerFlow() {
   let content
   switch (step) {
     case 0:
-      content = <OrgStep onSelect={(login) => { setSelectedOrg(login); next(); }} />
+      content = <RepoStep />
       break
     case 1:
-      content = <RepoStep orgLogin={selectedOrg} />
-      break
-    case 2:
       content = <ReviewPrStep />
       break
-    case 3:
+    case 2:
       content = <AnalyticsStep />
       break
   }
