@@ -10,6 +10,7 @@ import PrivateRoute from "./components/PrivateRoutes";
 import Website from "./pages/Website";
 import SignUp from "./auth/SignUp";
 import { Toaster } from "./components/ui/sonner"; // ✅ Your custom Toaster wrapper
+import OpenIssuePage from "./components/OpenIssuePage";
 import MaintainerDashboard from "./pages/MaintainerDashboard";
 const App = () => {
   return (
@@ -37,6 +38,11 @@ const App = () => {
             </PrivateRoute>
           }
           />
+            <Route
+          path="/maintainer/open-issue/:number"
+          element={<OpenIssuePage />}
+        />
+
         <Route
           path="/company/dashboard"
           element={
