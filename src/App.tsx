@@ -23,13 +23,13 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signUp" element={<SignUp />} />
 
-        <Route
-          path="/contributor/dashboard"
-          element={
-            <PrivateRoute allowedRoles={["contributor"]}>
-              <Dashboard role="Contributor" />
-            </PrivateRoute>
-          }
+          <Route
+            path="/contributor/dashboard"
+            element={
+              <PrivateRoute allowedRoles={["contributor"]}>
+                <Dashboard role="Contributor" />
+              </PrivateRoute>
+            }
           />
 
         <Route
