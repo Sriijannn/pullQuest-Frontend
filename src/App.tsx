@@ -12,7 +12,9 @@ import SignUp from "./auth/SignUp";
 import { Toaster } from "./components/ui/sonner";
 import OpenIssuePage from "./components/OpenIssuePage";
 import MaintainerDashboard from "./pages/MaintainerDashboard";
+import CompanyDashboard from "./pages/CompanyDashborad";
 import ReviewPrStep from "./Flows/RepoIssuesStep";
+import NewIssueForm from "./Flows/NewIssueForm";
 
 const App = () => {
   return (
@@ -45,6 +47,12 @@ const App = () => {
           path="/maintainer/open-issue/:number"
           element={<OpenIssuePage />}
         />
+        
+        <Route
+        path="/maintainer/repo/:owner/:repo/issues/new"
+        element={<NewIssueForm />}
+      />
+
       <Route
         path="/maintainer/repo/:owner/:repo/prs"
         element={<ReviewPrStep />}
@@ -53,7 +61,7 @@ const App = () => {
           path="/company/dashboard"
           element={
             <PrivateRoute allowedRoles={["company"]}>
-              <Dashboard role="Company" />
+              <CompanyDashboard/>
             </PrivateRoute>
           }
           />

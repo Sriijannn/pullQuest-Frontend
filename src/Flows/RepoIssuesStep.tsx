@@ -53,7 +53,7 @@ export default function RepoIssuesStep() {
       .then(res =>
         res.data.success
           ? setIssues(res.data.data.filter(i => !i.pull_request))
-          : setError(res.data.message || "Failed to load issues")
+          : setError("Failed to load issues")
       )
       .catch(err =>
         setError(err.response?.data?.message || err.message || "Unknown error")
